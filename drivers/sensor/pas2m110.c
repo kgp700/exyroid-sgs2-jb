@@ -860,6 +860,9 @@ static int pas2m110_i2c_probe(struct i2c_client *client,
 	}
 	dev_set_drvdata(pas2m110->switch_cmd_dev, pas2m110);
 
+	input_report_abs(pas2m110->proximity_input_dev, ABS_DISTANCE, 1);
+	input_sync(pas2m110->proximity_input_dev);
+
 	goto done;
 
 /* error, unwind it all */

@@ -2417,7 +2417,7 @@ static void __init exynos_reserve_mem(void)
 #ifdef CONFIG_EXYNOS_C2C
 		"samsung-c2c=c2c_shdmem;"
 #endif
-		"s3cfb.0=fimd;"
+		"s3cfb.0=fimd;samsung-pd.1=fimd;"
 #ifdef CONFIG_AUDIO_SAMSUNG_MEMSIZE_SRP
 		"samsung-rp=srp;"
 #endif

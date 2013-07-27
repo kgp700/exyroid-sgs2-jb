@@ -130,9 +130,9 @@ static _mali_osk_resource_t arch_configuration [] =
 #endif/* if USING_OS_MEMORY*/
 	{
 		.type = MEM_VALIDATION,
-		.description = "memory validation",
-		.base = MEM_BASE_ADDR,
-		.size = MEM_TOTAL_SIZE,
+		.description = "Framebuffer Memory",
+		.base = 0,
+		.size = 0,
 		.flags = _MALI_CPU_WRITEABLE | _MALI_CPU_READABLE | _MALI_PP_READABLE | _MALI_PP_WRITEABLE | _MALI_GP_READABLE | _MALI_GP_WRITEABLE | _MALI_MMU_READABLE | _MALI_MMU_WRITEABLE
 	},
 #else /* Not using MMU */

@@ -11,6 +11,9 @@
 #include "mali_mem_validation.h"
 #include "mali_osk.h"
 #include "mali_kernel_common.h"
+#include <linux/cma.h>
+#include <plat/pd.h>
+#include <linux/platform_device.h>
 
 #define MALI_INVALID_MEM_ADDR 0xFFFFFFFF
 
@@ -20,14 +23,34 @@ typedef struct
 	u32 size;             /**< size in bytes of the memory, multiple of page size */
 } _mali_mem_validation_t;
 
+extern struct platform_device exynos4_device_pd[];
+
 static _mali_mem_validation_t mali_mem_validator = { MALI_INVALID_MEM_ADDR, MALI_INVALID_MEM_ADDR };
 
-_mali_osk_errcode_t mali_mem_validation_add_range(const _mali_osk_resource_t *resource)
+_mali_osk_errcode_t mali_mem_validation_add_range(_mali_osk_resource_t *resource)
 {
+	struct cma_info mem_info;
+
 	/* Check that no other MEM_VALIDATION resources exist */
 	if (MALI_INVALID_MEM_ADDR != mali_mem_validator.phys_base)
 	{
 		MALI_PRINT_ERROR(("Failed to add MEM_VALIDATION resource %s; another range is already specified\n", resource->description));
+		return _MALI_OSK_ERR_FAULT;
+	}
+	if (strcmp(resource->description, "Framebuffer Memory") == 0) {
+		if (cma_info(&mem_info,
+				&exynos4_device_pd[PD_G3D].dev, "fimd")) {
+			MALI_PRINT_ERROR(("Failed to get framebuffer "
+					"information from CMA\n",
+					resource->description));
+			return _MALI_OSK_ERR_FAULT;
+		}
+		resource->base = mem_info.lower_bound;
+		resource->size = mem_info.total_size - mem_info.free_size;
+	} else {
+		MALI_PRINT_ERROR(("Failed to add Framebuffer resource %s;"
+				" resource description error\n",
+				resource->description));
 		return _MALI_OSK_ERR_FAULT;
 	}
 

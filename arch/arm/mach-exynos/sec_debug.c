@@ -24,6 +24,7 @@
 #include <linux/ptrace.h>
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
+#include <linux/seq_file.h>
 
 #include <plat/system-reset.h>
 #include <mach/sec_debug.h>
@@ -224,9 +225,20 @@ struct sec_debug_core_t {
  */
 union sec_debug_level_t sec_debug_level = { .en.kernel_fault = 1, };
 
+enum sec_debug_reset_reason_t {
+	RR_S = 1,
+	RR_W = 2,
+	RR_D = 3,
+	RR_N = 4,
+        RR_P = 5
+};
+
+static unsigned reset_reason = RR_N;
+
 module_param_named(enable, sec_debug_level.en.kernel_fault, ushort, 0644);
 module_param_named(enable_user, sec_debug_level.en.user_fault, ushort, 0644);
 module_param_named(level, sec_debug_level.uint_val, uint, 0644);
+module_param_named(reset_reason, reset_reason, uint, 0644);
 
 /* klaatu - schedule log */
 #ifdef CONFIG_SEC_DEBUG_SCHED_LOG
@@ -1174,6 +1186,50 @@ static int __init sec_debug_user_fault_init(void)
 
 device_initcall(sec_debug_user_fault_init);
 #endif
+
+
+static int set_reset_reason_proc_show(struct seq_file *m, void *v)
+{
+	printk("%s : %d", __func__, reset_reason);
+	if (reset_reason == RR_S)
+		seq_printf(m, "SPON\n");
+	else if(reset_reason == RR_W)
+		seq_printf(m, "WPON\n");
+	else if(reset_reason == RR_D)
+		seq_printf(m, "DPON\n");
+        else if(reset_reason == RR_P)
+		seq_printf(m, "PPON\n");
+	else
+		seq_printf(m, "NPON\n");
+
+	return 0;
+}
+
+static int sec_reset_reason_proc_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, set_reset_reason_proc_show, NULL);
+}
+
+static const struct file_operations sec_reset_reason_proc_fops = {
+	.open		= sec_reset_reason_proc_open,
+	.read		= seq_read,
+	.llseek		= seq_lseek,
+	.release	= single_release,
+};
+
+static int __init sec_debug_reset_reason_init(void)
+{
+	struct proc_dir_entry *entry;
+
+	entry = proc_create("reset_reason", S_IWUGO, NULL,
+			    &sec_reset_reason_proc_fops);
+	if (!entry)
+		return -ENOMEM;
+
+	return 0;
+}
+
+device_initcall(sec_debug_reset_reason_init);
 
 int sec_debug_magic_init(void)
 {
