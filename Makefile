@@ -193,7 +193,7 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?= arm
-CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
+CROSS_COMPILE	?= /root/1test/toolchain/android-toolchain-eabi-1306/bin/arm-eabi-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -350,8 +350,8 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	=
-AFLAGS_KERNEL	=
+CFLAGS_KERNEL	= -marm -mtune=cortex-a9 -march=armv7-a -mfpu=neon -ftree-vectorize -fno-gcse -mvectorize-with-neon-quad -fsingle-precision-constant -funswitch-loops -fprofile-correction -funsafe-math-optimizations -floop-interchange -floop-strip-mine -floop-block -pipe
+AFLAGS_KERNEL	= -marm -mtune=cortex-a9 -march=armv7-a -mfpu=neon -ftree-vectorize -fno-gcse -mvectorize-with-neon-quad -fsingle-precision-constant -funswitch-loops -fprofile-correction -funsafe-math-optimizations -floop-interchange -floop-strip-mine -floop-block -pipe
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 
@@ -368,7 +368,12 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks
+		   -fno-delete-null-pointer-checks \
+		   -marm -mtune=cortex-a9 -march=armv7-a -mfpu=neon -mfloat-abi=softfp \
+		   -fno-gcse -mvectorize-with-neon-quad -ftree-vectorize -fsingle-precision-constant -funswitch-loops \
+		   -fprofile-correction -funsafe-math-optimizations \
+		   -floop-interchange -floop-strip-mine -floop-block -pipe -mthumb-interwork  
+
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
@@ -569,7 +574,11 @@ KBUILD_CFLAGS	+= -fdiagnostics-show-option -Werror \
 		   -Wno-error=unused-function \
 		   -Wno-error=unused-variable \
 		   -Wno-error=unused-value \
-		   -Wno-error=unused-label
+		   -Wno-error=unused-label \
+		   -Wno-error=uninitialized \
+		   -Wno-error=address \
+		   -Wno-error=enum-compare
+
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
