@@ -1769,6 +1769,7 @@ static irqreturn_t mxt224_irq_thread(int irq, void *ptr)
 			if ((msg[4] & 0x5) == 0x5) {
 				printk(KERN_ERR
 				       "[TSP] median filter state error!!!\n");
+				median_err_setting();
 			} else if ((msg[4] & 0x4) == 0x4) {
 				copy_data->read_ta_status(&ta_status_check);
 				if ((!ta_status_check)
