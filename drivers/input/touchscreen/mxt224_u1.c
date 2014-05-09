@@ -1766,7 +1766,7 @@ static irqreturn_t mxt224_irq_thread(int irq, void *ptr)
 		}
 #ifdef CLEAR_MEDIAN_FILTER_ERROR
 		if ((msg[0] == 18) && (data->family_id == 0x81)) {
-			if ((msg[4] & 0x5) == 0x5) {
+			if ((msg[4] & 0x16) == 0x16) {
 				printk(KERN_ERR
 				       "[TSP] median filter state error!!!\n");
 				median_err_setting();
