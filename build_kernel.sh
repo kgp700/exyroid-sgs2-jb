@@ -1,7 +1,4 @@
 #!/bin/bash
 
-export ARCH=arm
-export CROSS_COMPILE=/opt/toolchains/arm-eabi-4.4.3/bin/arm-eabi-
-
-make u1_kor_skt_defconfig
-make
+make 1neok_kt_defconfig
+make -j4 ARCH=arm CROSS_COMPILE=/opt/toolchain/arm-cortex_a9-linux-gnueabihf-linaro_4.7.4-2014.04/bin/arm-cortex_a9-linux-gnueabihf-
