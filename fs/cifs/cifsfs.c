@@ -86,8 +86,17 @@ extern mempool_t *cifs_sm_req_poolp;
 extern mempool_t *cifs_req_poolp;
 extern mempool_t *cifs_mid_poolp;
 
+#ifdef CONFIG_CRYPTO_FIPS
+bool in_fips_err()
+{
+	return false;
+}
+EXPORT_SYMBOL_GPL(in_fips_err);
+#endif
+
 void
 cifs_sb_active(struct super_block *sb)
+
 {
 	struct cifs_sb_info *server = CIFS_SB(sb);
 
